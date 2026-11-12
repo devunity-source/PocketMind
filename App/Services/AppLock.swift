@@ -81,9 +81,9 @@ enum AppTab: Hashable {
 /// Shortcuts, or ask Siri. It opens the app and starts a visible recording; it cannot
 /// record in the background without the app coming to the front.
 struct StartRecordingIntent: AppIntent {
-    static var title: LocalizedStringResource = "Start Recording"
-    static var description = IntentDescription("Opens PocketMind and starts a new recording.")
-    static var openAppWhenRun = true
+    static let title: LocalizedStringResource = "Start Recording"
+    static let description = IntentDescription("Opens PocketMind and starts a new recording.")
+    static let openAppWhenRun = true
 
     @MainActor
     func perform() async throws -> some IntentResult {

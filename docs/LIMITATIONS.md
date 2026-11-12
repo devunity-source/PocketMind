@@ -2,12 +2,22 @@
 
 ## Verification gaps (most important)
 
-- **The app has never been compiled.** It was written on Windows. `PocketMindCore` is
-  compiled and tested (57 tests); the SwiftUI app, the whisper/llama bridges and the app
-  tests have only passed a syntax check. Expect compile errors on the first Xcode or CI
-  build — most likely in SwiftUI view code, concurrency annotations, and the C interop in
-  `Packages/LocalAI`. The bridges were written against the actual `whisper.h`/`llama.h`
-  of the pinned releases, but never built against them.
+- **The app has never been launched.** It was written on Windows and is built by GitHub
+  Actions. It compiles and links for simulator and device, the core tests (57) and the
+  simulator app tests (13 of 14; the Keychain test skips in an unsigned host) pass, and
+  CI produces an unsigned IPA. No one has yet opened the app, so every screen is
+  unverified: layout problems, navigation mistakes and runtime crashes are to be expected
+  on first use.
+- **No model has ever been run.** The whisper.cpp and llama.cpp bridges compile against
+  the pinned frameworks, but transcription and text generation have not executed once.
+  Parameter choices (threads, context size, grammar, chat template handling) are
+  untested.
+- **Language models cannot be tested in the simulator.** llama.cpp's release XCFramework
+  has no iOS Simulator slice, so simulator builds use a stub that reports the model as
+  unavailable (`POCKETMIND_SIMULATOR_BUILD`, see `Packages/LocalAI/Package.swift`).
+  Summaries and written Memory answers can only be exercised on a real iPhone. To run on
+  a simulator from Xcode, launch Xcode with that variable set; do not set it for device
+  builds.
 - **Nothing has run on a device.** Recording in the background, Metal inference, memory
   behaviour with large models, Face ID, the Action Button intent and battery use are all
   untested.
@@ -15,7 +25,8 @@
   ggml. They are dynamic frameworks, which should keep their symbols apart, but this
   combination was not run. If it misbehaves, the fix is one combined framework built from
   source, or matching ggml versions.
-- **CI workflow** has never executed. The runner image must provide Xcode 16+.
+- **Toolchain.** CI has only built with Xcode 26.6 (Swift 6.3). Older Xcode versions are
+  untested.
 - **Model quality.** No model was downloaded or evaluated. Small quantised models make
   mistakes; summaries of Arabic and Ukrainian recordings will be weaker than English.
 
@@ -60,7 +71,7 @@
 
 ## Future improvements, roughly in priority order
 
-1. First macOS build; fix compile errors; run the app test suite on a simulator.
+1. First install on an iPhone; fix what breaks at runtime in the interface and bridges.
 2. On-device validation and real benchmarks on iPhone 17 for at least two Whisper and two
    language-model configurations; tune context size and thread counts from measurements.
 3. Crash-safe recording with fragmented MP4 and encryption during capture.

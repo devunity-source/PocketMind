@@ -12,12 +12,14 @@ one-time model download you start yourself.
 
 | Part | State |
 | --- | --- |
-| `PocketMindCore` (database, FTS5 search, RAG, summarisation logic, encryption, parsing, export) | **Compiled and tested**: 57 unit tests pass on Swift 6.4.2 (Linux/WSL). |
-| App, `LocalAI` bridges, app tests (SwiftUI, AVFoundation, whisper.cpp, llama.cpp) | **Written but never compiled.** This project was authored on Windows, where iOS code cannot be built. All 19 files pass a Swift *syntax* check; type errors are still likely on the first Xcode build. |
-| Running on an iPhone, transcription/summary quality, speed, battery | **Not verified.** Needs a macOS build and a physical device. |
+| `PocketMindCore` (database, FTS5 search, RAG, summarisation logic, encryption, parsing, export) | **Compiled and tested**: 57 unit tests pass on Linux and macOS in CI. |
+| App and `LocalAI` bridges (SwiftUI, AVFoundation, whisper.cpp, llama.cpp) | **Compiles and links** in CI with Xcode 26.6, for the simulator and for a real device; CI produces an unsigned IPA with both frameworks embedded. |
+| App tests on the iOS simulator | **13 pass, 1 skipped** (the Keychain test needs a signed host): vault encryption, audio decoding, recorder lifecycle, interruptions, model manager. |
+| Running on an iPhone: the interface, real transcription and summaries, speed, battery | **Not verified.** Nobody has launched the app yet. The whisper.cpp and llama.cpp bridges compile against the real headers but have never run with a model. |
 
-The first macOS build (locally or on GitHub Actions) is the next step; expect to fix a
-handful of compile errors there. See [docs/LIMITATIONS.md](docs/LIMITATIONS.md).
+"The build is green" means the code compiles and the logic that can be tested without a
+phone works. It does not yet mean the app behaves correctly on a device. See
+[docs/LIMITATIONS.md](docs/LIMITATIONS.md).
 
 ## Features
 

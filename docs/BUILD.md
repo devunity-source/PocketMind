@@ -15,8 +15,8 @@ Realistic routes:
 | A paid Apple Developer account (99 USD/year) | Either route, plus TestFlight and one-year signing instead of seven days. |
 | None of the above | A rented cloud Mac (MacinCloud, AWS EC2 Mac, Scaleway) — then route A. |
 
-Requirements for every route: Xcode 16 or newer (Swift 6 toolchain), an iPhone on
-iOS 18 or later, an Apple ID.
+Requirements for every route: Xcode 26 (the version CI builds with; Xcode 16 may work
+but is untested), an iPhone on iOS 18 or later, an Apple ID.
 
 ## Dependencies
 
@@ -48,7 +48,9 @@ The app has no other third-party code: no analytics, advertising or crash-report
    (`PRODUCT_BUNDLE_IDENTIFIER`) so it survives regeneration.
 4. Connect the iPhone by cable, unlock it, tap *Trust*. On the phone enable
    *Settings → Privacy & Security → Developer Mode* and restart when asked.
-5. Choose the iPhone as run destination and press **Run**.
+5. Choose the iPhone as run destination and press **Run**. (A simulator destination
+   fails to link unless Xcode was started with `POCKETMIND_SIMULATOR_BUILD=1` in its
+   environment; see LIMITATIONS.md.)
 6. First launch with a free Apple ID: on the phone open *Settings → General → VPN &
    Device Management*, tap your Apple ID and trust it. Then open the app.
 
@@ -75,8 +77,9 @@ and you do not delete the app.
 5. On the phone: enable Developer Mode and trust the certificate as in route A, steps 4
    and 6.
 
-If the first CI run fails to compile, that is expected at this stage (see
-[LIMITATIONS.md](LIMITATIONS.md)): the build log names the file and line to fix.
+The workflow builds twice: once for the simulator to run the tests (without llama.cpp,
+whose release framework has no simulator slice) and once for a real device, which is the
+build that goes into the IPA and includes both whisper.cpp and llama.cpp.
 
 ### TestFlight (paid account)
 
