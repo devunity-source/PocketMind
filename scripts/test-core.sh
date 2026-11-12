@@ -18,4 +18,5 @@ if [ -n "${POCKETMIND_SCRATCH:-}" ]; then
 fi
 
 swift --version
-swift test "${args[@]}" "$@"
+# The ${x[@]+...} form keeps macOS's bash 3.2 from treating an empty array as unbound.
+swift test ${args[@]+"${args[@]}"} "$@"

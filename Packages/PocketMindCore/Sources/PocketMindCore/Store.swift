@@ -41,11 +41,9 @@ public final class Store: @unchecked Sendable {
     static let schemaVersion: Int64 = 1
 
     private func migrate() throws {
-        defer {
-            // Ask FTS5 to physically remove index entries on delete (SQLite 3.42+). Older
-            // SQLite versions reject the option; compactAfterDeletion() covers those.
-            try? db.execute("INSERT INTO chunks_fts(chunks_fts, rank) VALUES ('secure-delete', 1)")
-        }
+        // FTS5's 'secure-delete' option is deliberately not used: several SQLite releases
+        // corrupt external-content indexes with it. compactAfterDeletion() removes deleted
+        // words from the index instead, on every SQLite version.
         let version = try db.scalarInt("PRAGMA user_version")
         guard version < Store.schemaVersion else { return }
         try db.transaction {
