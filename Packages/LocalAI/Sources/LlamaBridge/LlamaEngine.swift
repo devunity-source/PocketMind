@@ -1,5 +1,28 @@
 import Foundation
 import PocketMindCore
+
+#if !canImport(llama)
+
+/// Stand-in used when the package is built without llama.cpp (iOS Simulator builds, see
+/// Package.swift). It has the same interface and always reports the model as unavailable,
+/// so the app falls back to its no-language-model behaviour.
+public final class LlamaEngine: LanguageModelEngine, @unchecked Sendable {
+    public let modelID: String
+    public let contextTokens: Int
+    public let usesGPU = false
+
+    public init(modelPath: String, modelID: String, contextTokens: Int = 4096, useGPU: Bool) throws {
+        throw EngineError.modelLoadFailed("Language models are not available in iOS Simulator builds. Run on an iPhone.")
+    }
+
+    public func generate(messages: [ChatMessage], options: GenerationOptions,
+                         onToken: @escaping @Sendable (String) -> Bool) async throws -> String {
+        throw EngineError.modelNotInstalled
+    }
+}
+
+#else
+
 import llama
 
 /// On-device text generation with llama.cpp. One instance owns one loaded GGUF model and
@@ -207,3 +230,5 @@ public final class LlamaEngine: LanguageModelEngine, @unchecked Sendable {
         return output
     }
 }
+
+#endif

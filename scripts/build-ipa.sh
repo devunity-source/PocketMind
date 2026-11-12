@@ -7,16 +7,19 @@ cd "$(dirname "$0")/.."
 
 bash scripts/bootstrap.sh
 
+# Device builds must include llama.cpp.
+unset POCKETMIND_SIMULATOR_BUILD
+
 xcodebuild build \
   -project PocketMind.xcodeproj \
   -scheme PocketMind \
   -configuration Release \
   -sdk iphoneos \
   -destination "generic/platform=iOS" \
-  -derivedDataPath build \
+  -derivedDataPath build/device \
   CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
 
-APP="build/Build/Products/Release-iphoneos/PocketMind.app"
+APP="build/device/Build/Products/Release-iphoneos/PocketMind.app"
 [ -d "$APP" ] || { echo "Build product not found at $APP" >&2; exit 1; }
 
 rm -rf build/ipa && mkdir -p build/ipa/Payload

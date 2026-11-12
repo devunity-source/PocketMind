@@ -36,6 +36,9 @@ jobs:
       - name: Run all tests (core + app on simulator)
         run: bash scripts/test.sh
       - name: Build unsigned IPA
+        # Runs even when simulator tests fail: the device build is the only place the
+        # llama.cpp bridge is compiled and linked.
+        if: always()
         run: bash scripts/build-ipa.sh
       - name: Upload IPA
         uses: actions/upload-artifact@v4

@@ -17,9 +17,14 @@ xcrun simctl boot "$DEVICE" 2>/dev/null || true
 # Lets the recorder lifecycle tests run instead of skipping.
 xcrun simctl privacy booted grant microphone app.pocketmind.PocketMind || true
 
+# llama.cpp's release XCFramework has no simulator slice; this variable makes the LocalAI
+# package leave it out (see Packages/LocalAI/Package.swift). A separate derived-data
+# directory keeps the simulator package graph apart from the device one.
+export POCKETMIND_SIMULATOR_BUILD=1
+
 xcodebuild test \
   -project PocketMind.xcodeproj \
   -scheme PocketMind \
   -destination "platform=iOS Simulator,name=$DEVICE" \
-  -derivedDataPath build \
+  -derivedDataPath build/sim \
   CODE_SIGNING_ALLOWED=NO
